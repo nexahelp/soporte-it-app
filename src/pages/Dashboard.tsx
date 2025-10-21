@@ -6,20 +6,14 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   const fetchTickets = async () => {
-    const { data, error } = await supabase
-      .from("tickets")
-      .select("*")
-      .order("fecha_ingreso", { ascending: false });
+    const { data, error } = await supabase.from("tickets").select("*").order("fecha_ingreso", { ascending: false });
     if (error) console.error(error);
     else setTickets(data || []);
     setLoading(false);
   };
 
   const updateEstado = async (id: string, nuevoEstado: string) => {
-    const { error } = await supabase
-      .from("tickets")
-      .update({ estado: nuevoEstado })
-      .eq("id", id);
+    const { error } = await supabase.from("tickets").update({ estado: nuevoEstado }).eq("id", id);
     if (error) alert("Error al actualizar estado");
     else fetchTickets();
   };
@@ -31,16 +25,13 @@ export default function Dashboard() {
     else fetchTickets();
   };
 
-  useEffect(() => {
-    fetchTickets();
-  }, []);
+  useEffect(() => { fetchTickets(); }, []);
 
   if (loading) return <p className="text-center mt-10 text-gray-600">Cargando tickets...</p>;
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <h1 className="text-3xl font-bold mb-6 text-gray-800 text-center">Dashboard NexaHelp</h1>
-
       <div className="overflow-x-auto bg-white rounded-xl shadow-lg">
         <table className="w-full text-sm text-left">
           <thead className="bg-green-700 text-white">
@@ -71,10 +62,7 @@ export default function Dashboard() {
                   </select>
                 </td>
                 <td className="p-3">
-                  <button
-                    onClick={() => deleteTicket(t.id)}
-                    className="text-red-600 hover:underline"
-                  >
+                  <button onClick={() => deleteTicket(t.id)} className="text-red-600 hover:underline">
                     Eliminar
                   </button>
                 </td>

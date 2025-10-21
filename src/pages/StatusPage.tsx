@@ -1,20 +1,23 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { supabase } from '../supabaseClient';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { supabase } from "../supabaseClient";
 
 export default function StatusPage() {
   const { id } = useParams();
   const [ticket, setTicket] = useState<any>(null);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     const fetchTicket = async () => {
-      const { data } = await supabase.from('tickets').select('*').eq('id', id).single();
-      setTicket(data);
+      const { data, error } = await supabase.from("tickets").select("*").eq("id", id).single();
+      if (error || !data) setErrorMsg("Ticket no encontrado o eliminado.");
+      else setTicket(data);
     };
     fetchTicket();
   }, [id]);
 
-  if (!ticket) return <p className="text-center mt-10 text-gray-600">Cargando...</p>;
+  if (errorMsg) return <p className="text-center mt-10 text-red-600">{errorMsg}</p>;
+  if (!ticket) return <p className="text-center mt-10 text-gray-600">Cargando información...</p>;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
@@ -23,7 +26,7 @@ export default function StatusPage() {
         <p><strong>Cliente:</strong> {ticket.nombre_cliente}</p>
         <p><strong>Equipo:</strong> {ticket.equipo}</p>
         <p><strong>Falla:</strong> {ticket.falla}</p>
-        <p><strong>Estado:</strong> {ticket.estado}</p>
+        <p><strong>Estado actual:</strong> <span className="text-green-700">{ticket.estado}</span></p>
         <p><strong>Fecha de ingreso:</strong> {new Date(ticket.fecha_ingreso).toLocaleDateString()}</p>
       </div>
     </div>
